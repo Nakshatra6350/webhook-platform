@@ -1,6 +1,14 @@
 package org.learning.webhook.schedule;
 
+import java.util.Comparator;
+
 public record ScheduledDelivery(String eventId, String endpointId, int attempt, long dueAtEpochSeconds) {
+    public static final Comparator<ScheduledDelivery> DUE_ORDER =
+            Comparator.comparingLong(ScheduledDelivery::dueAtEpochSeconds)
+                    .thenComparing(ScheduledDelivery::eventId)
+                    .thenComparingInt(ScheduledDelivery::attempt)
+                    .thenComparing(ScheduledDelivery::endpointId);
+
     public ScheduledDelivery{
         if(eventId == null || eventId.isBlank()){
             throw new IllegalArgumentException("Event id is required");
